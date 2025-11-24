@@ -42,9 +42,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 		{
 			if (HIWORD(wParam) == LBN_DBLCLK)
 			{
-				INT index = (INT)SendDlgItemMessage(hwnd, IDC_LIST, LB_GETCURSEL, 0, 0);
-
-				DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_ADD), hwnd, (DLGPROC)DlgProcEDIT, (LPARAM)index);
+				DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_ADD), hwnd, (DLGPROC)DlgProcEDIT, (LPARAM)SendDlgItemMessage(hwnd, IDC_LIST, LB_GETCURSEL, 0, 0));
 			}
 		}
 
@@ -125,6 +123,7 @@ BOOL CALLBACK DlgProcEDIT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 	CONST INT SIZE = 256;
 	CHAR sz_buffer[SIZE] = {};
 	HWND hList = GetDlgItem(GetParent(hwnd), IDC_LIST);
+	HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
 
 	switch (uMsg)
 	{
@@ -132,7 +131,10 @@ BOOL CALLBACK DlgProcEDIT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 	{
 		SetFocus(GetDlgItem(hwnd, IDC_EDIT));
 		SendMessage(hList, LB_GETTEXT, Param, (LPARAM)sz_buffer);
-		SetDlgItemText(hwnd, IDC_LIST, sz_buffer);
+		SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)"Изменение!");
+		SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)sz_buffer);
+
+		SendMessage(hEdit, EM_SETSEL, strlen(sz_buffer), -1);
 	}
 	break;
 	case WM_COMMAND:
@@ -141,21 +143,21 @@ BOOL CALLBACK DlgProcEDIT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 		{
 		case IDOK:
 		{
-			HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
-			SendMessage(hEdit, LB_GETTEXT, 0, (LPARAM)sz_buffer);
-			SendMessage(hList, LB_DELETESTRING, Param, 0);
-			SendMessage(hList, LB_ADDSTRING, Param, (LPARAM)sz_buffer);
+			SendMessage(hEdit, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
+			INT i = SendMessage(hList, LB_GETCURSEL, 0, 0);
+			if (SendMessage(hList, LB_FINDSTRINGEXACT, 0, (LPARAM)sz_buffer) == LB_ERR)
+			{
+				SendMessage(hList, LB_DELETESTRING, i, 0);
+				SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
+			}
 		}
 		case IDCANCEL:
-
 			EndDialog(hwnd, 0);
 		}
-		break;
+	}
+	break;
 	case WM_CLOSE:
-	{
 		EndDialog(hwnd, 0);
-	}
-	}
 	}
 	return FALSE;
 }
