@@ -23,7 +23,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 	{
 	case WM_INITDIALOG:
 	{
-		HWND hListBox = GetDlgItem(hwnd, IDC_LIST1);
+		HWND hListBox = GetDlgItem(hwnd, IDC_LIST);
 		for (int i = 0; i < sizeof(g_sz_VALUES) / sizeof(g_sz_VALUES[0]); i++)
 		{
 			SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)g_sz_VALUES[i]);
@@ -33,18 +33,18 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 
 	case WM_COMMAND:
 	{
-		
+
 
 		switch (LOWORD(wParam))
 		{
 
-		case IDC_LIST1:
+		case IDC_LIST:
 		{
 			if (HIWORD(wParam) == LBN_DBLCLK)
 			{
-				INT index = (INT)SendDlgItemMessage(hwnd, IDC_LIST1, LB_GETCURSEL, 0, 0);
+				INT index = (INT)SendDlgItemMessage(hwnd, IDC_LIST, LB_GETCURSEL, 0, 0);
 
-				DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_ADD), hwnd, (DLGPROC)DlgProcEDIT, (LPARAM) index);
+				DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_ADD), hwnd, (DLGPROC)DlgProcEDIT, (LPARAM)index);
 			}
 		}
 
@@ -59,11 +59,11 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 		{
 			DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_ADD), hwnd, (DLGPROC)DlgProcADD, 0);
 		}
-			break;
+		break;
 
 		case IDC_DELETE_BUTTON:
 		{
-			HWND hListBox = GetDlgItem(hwnd, IDC_LIST1);
+			HWND hListBox = GetDlgItem(hwnd, IDC_LIST);
 			INT i = SendMessage(hListBox, LB_GETCURSEL, 0, 0);
 			SendMessage(hListBox, LB_DELETESTRING, i, 0);
 		}
@@ -87,7 +87,7 @@ BOOL CALLBACK DlgProcADD(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 	{
 		SetFocus(GetDlgItem(hwnd, IDC_EDIT));
 	}
-		break;
+	break;
 	case WM_COMMAND:
 	{
 		switch (LOWORD(wParam))
@@ -100,7 +100,7 @@ BOOL CALLBACK DlgProcADD(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 			SendMessage(hEdit, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
 
 			HWND hParent = GetParent(hwnd);
-			HWND hList = GetDlgItem(hParent, IDC_LIST1);
+			HWND hList = GetDlgItem(hParent, IDC_LIST);
 			if (SendMessage(hList, LB_FINDSTRINGEXACT, 0, (LPARAM)sz_buffer) == LB_ERR)
 				SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
 			else
@@ -113,7 +113,7 @@ BOOL CALLBACK DlgProcADD(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 			EndDialog(hwnd, 0);
 		}
 	}
-		break;
+	break;
 	case WM_CLOSE:
 		EndDialog(hwnd, 0);
 	}
@@ -124,7 +124,7 @@ BOOL CALLBACK DlgProcEDIT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 {
 	CONST INT SIZE = 256;
 	CHAR sz_buffer[SIZE] = {};
-	HWND hList = GetDlgItem(GetParent(hwnd), IDC_LIST1);
+	HWND hList = GetDlgItem(GetParent(hwnd), IDC_LIST);
 
 	switch (uMsg)
 	{
@@ -132,7 +132,7 @@ BOOL CALLBACK DlgProcEDIT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 	{
 		SetFocus(GetDlgItem(hwnd, IDC_EDIT));
 		SendMessage(hList, LB_GETTEXT, Param, (LPARAM)sz_buffer);
-		SetDlgItemText(hwnd, IDC_LIST1, sz_buffer);
+		SetDlgItemText(hwnd, IDC_LIST, sz_buffer);
 	}
 	break;
 	case WM_COMMAND:
@@ -142,11 +142,12 @@ BOOL CALLBACK DlgProcEDIT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 		case IDOK:
 		{
 			HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
+			SendMessage(hEdit, LB_GETTEXT, 0, (LPARAM)sz_buffer);
 			SendMessage(hList, LB_DELETESTRING, Param, 0);
-			SendMessage(hEdit, LB_ADDSTRING, Param, (LPARAM)sz_buffer);
+			SendMessage(hList, LB_ADDSTRING, Param, (LPARAM)sz_buffer);
 		}
 		case IDCANCEL:
-		
+
 			EndDialog(hwnd, 0);
 		}
 		break;
