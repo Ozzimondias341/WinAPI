@@ -2,14 +2,14 @@
 #include <Windows.h>
 #include "resource.h"
 
-CONST CHAR* g_sz_VALUES[] = { "This","is", "my", "first", "List", "box" };
+CONST CHAR g_sz_filename[] = "list.txt";
 
 BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param);
 BOOL CALLBACK DlgProcADD(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param);
 BOOL CALLBACK DlgProcEDIT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param);
 
 VOID SaveList(HWND hwnd, CONST CHAR fileName[]);
-
+VOID LoadList(HWND hwnd, CONST CHAR fileName[]);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -25,11 +25,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 	{
 	case WM_INITDIALOG:
 	{
-		HWND hListBox = GetDlgItem(hwnd, IDC_LIST);
-		for (int i = 0; i < sizeof(g_sz_VALUES) / sizeof(g_sz_VALUES[0]); i++)
-		{
-			SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)g_sz_VALUES[i]);
-		}
+		LoadList(hwnd, g_sz_filename);
 	}
 	break;
 
@@ -52,7 +48,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 			break;
 
 		case IDCANCEL:
-			SaveList(hwnd, "list.txt");
+			SaveList(hwnd, g_sz_filename);
 			EndDialog(hwnd, 0);
 			break;
 
@@ -96,7 +92,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 
 
 	case WM_CLOSE:
-		SaveList(hwnd, "list.txt");
+		SaveList(hwnd, g_sz_filename);
 		EndDialog(hwnd, 0);
 	}
 	return FALSE;
@@ -203,7 +199,7 @@ VOID SaveList(HWND hwnd, CONST CHAR fileName[])
 		CHAR sz_item[256] = {};
 		SendMessage(hList, LB_GETTEXT, i, (LPARAM)sz_item);
 		lstrcat(sz_buffer, sz_item);
-		l.strcat(sz_buffer, "\n");
+		lstrcat(sz_buffer, "\n");
 	}
 
 	HANDLE hFile = CreateFile(
@@ -217,5 +213,39 @@ VOID SaveList(HWND hwnd, CONST CHAR fileName[])
 
 	DWORD dwByresWritten = 0;
 	WriteFile(hFile, sz_buffer, strlen(sz_buffer)+1, &dwByresWritten, NULL);
+	CloseHandle(hFile);
+}
+
+VOID LoadList(HWND hwnd, CONST CHAR fileName[])
+{
+	
+
+	HANDLE hFile = CreateFile
+	(
+		fileName,
+		GENERIC_READ,
+		0,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL
+	);
+	DWORD dwError = GetLastError();
+
+	if (dwError == ERROR_FILE_NOT_FOUND) return;
+
+	CONST INT SIZE = 32768;
+	CHAR sz_buffer[SIZE] = {};
+
+	DWORD dwBytesRead = 0;
+
+	ReadFile(hFile, sz_buffer, SIZE, &dwBytesRead, NULL);
+
+	HWND hList = GetDlgItem(hwnd, IDC_LIST);
+
+	for (char* pch = strtok(sz_buffer, "\n"); pch;pch = strtok(NULL, "\n"))
+	{
+		SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)pch);
+	}
 	CloseHandle(hFile);
 }
