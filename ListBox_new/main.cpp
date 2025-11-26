@@ -1,4 +1,4 @@
-//#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 #include <Windows.h>
 #include "resource.h"
 
@@ -7,6 +7,8 @@ CONST CHAR* g_sz_VALUES[] = { "This","is", "my", "first", "List", "box" };
 BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param);
 BOOL CALLBACK DlgProcADD(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param);
 BOOL CALLBACK DlgProcEDIT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param);
+
+VOID SaveList(HWND hwnd, CONST CHAR fileName[]);
 
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
@@ -50,6 +52,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 			break;
 
 		case IDCANCEL:
+			SaveList(hwnd, "list.txt");
 			EndDialog(hwnd, 0);
 			break;
 
@@ -70,7 +73,30 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 		}
 	}
 	break;
+	
+	case WM_KEYUP:
+	{
+		switch (wParam)
+		{
+		case VK_RETURN:
+		{
+			HWND hList = GetDlgItem(hwnd, IDC_LIST);
+			if (GetFocus() == hList)
+			{
+				DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_ADD), hwnd, (DLGPROC)DlgProcEDIT, 0);
+			}
+		}
+		}
+	}
+		break;
+
+	case WM_KEYDOWN:
+		break;
+
+
+
 	case WM_CLOSE:
+		SaveList(hwnd, "list.txt");
 		EndDialog(hwnd, 0);
 	}
 	return FALSE;
@@ -99,8 +125,10 @@ BOOL CALLBACK DlgProcADD(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 
 			HWND hParent = GetParent(hwnd);
 			HWND hList = GetDlgItem(hParent, IDC_LIST);
+
 			if (SendMessage(hList, LB_FINDSTRINGEXACT, 0, (LPARAM)sz_buffer) == LB_ERR)
 				SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
+
 			else
 			{
 				MessageBox(hwnd, "Такой элемент уже существует", "Warning", MB_OK | MB_ICONWARNING);
@@ -160,4 +188,34 @@ BOOL CALLBACK DlgProcEDIT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM Param)
 		EndDialog(hwnd, 0);
 	}
 	return FALSE;
+}
+
+VOID SaveList(HWND hwnd, CONST CHAR fileName[])
+{
+	CONST INT SIZE = 32768;
+	CHAR sz_buffer[SIZE] = {};
+
+	HWND hList = GetDlgItem(hwnd, IDC_LIST);
+	INT n = SendMessage(hList, LB_GETCOUNT, 0, 0);
+
+	for (int i = 0; i < n; i++)
+	{
+		CHAR sz_item[256] = {};
+		SendMessage(hList, LB_GETTEXT, i, (LPARAM)sz_item);
+		lstrcat(sz_buffer, sz_item);
+		l.strcat(sz_buffer, "\n");
+	}
+
+	HANDLE hFile = CreateFile(
+		fileName,
+		GENERIC_WRITE,
+		0,
+		NULL,
+		CREATE_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL,
+		0);
+
+	DWORD dwByresWritten = 0;
+	WriteFile(hFile, sz_buffer, strlen(sz_buffer)+1, &dwByresWritten, NULL);
+	CloseHandle(hFile);
 }
