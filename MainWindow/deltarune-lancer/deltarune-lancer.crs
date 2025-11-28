@@ -1,0 +1,42 @@
+﻿[Arrow]
+Path=lancer normal.cur
+
+[UpArrow]
+Path=lancer alt select.cur
+
+[Wait]
+Path=lancer busy.ani
+
+[SizeNWSE]
+Path=lancer diagonal 1.cur
+
+[SizeNESW]
+Path=lancer diagonal 2.cur
+
+[Help]
+Path=lancer help.cur
+
+[SizeWE]
+Path=lancer horizontal.cur
+
+[Hand]
+Path=lancer link.cur
+
+[SizeAll]
+Path=lancer move.cur
+
+[NWPen]
+Path=lancer pen.cur
+
+[Crosshair]
+Path=lancer precision.cur
+
+[No]
+Path=lancer unavailable.cur
+
+[SizeNS]
+Path=lancer vertical.cur
+
+[AppStarting]
+Path=lancer working in background.ani
+
