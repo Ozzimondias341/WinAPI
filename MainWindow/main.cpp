@@ -66,6 +66,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmbLine, IN
 		return 0;
 	}
 
+
 	ShowWindow(hwnd, nCmdShow); //Задаёт режим отображения окна - развёрнуто на весь экран | свёрнуто в окно | свёрнуто на панель задач.
 	UpdateWindow(hwnd); //Обновляет рабочую область окна отправляя сообщение WM_PAINT, если клиентская область окна не пустая
 
@@ -92,6 +93,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 	case WM_CREATE:
+	{
+		INT screenW = GetSystemMetrics(SM_CXSCREEN);
+		INT screenH = GetSystemMetrics(SM_CYSCREEN);
+
+		INT winW = screenW * 3 / 4;
+		INT winH = screenH * 3 / 4;
+
+		INT posX = (screenW - winW) / 2;
+		INT posY = (screenH - winH) / 2;
+
+		SetWindowPos(
+			hwnd,
+			nullptr,
+			posX,
+			posY,
+			winW,
+			winH,
+			SWP_NOZORDER 
+		);
+	}
 		break;
 	case WM_COMMAND:
 		break;
