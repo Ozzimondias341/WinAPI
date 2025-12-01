@@ -1,5 +1,8 @@
 #include <Windows.h>
 #include "resource.h"
+#include <cstdio>
+
+#define IDC_BUTTON 1000
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "My first window";
 
@@ -47,14 +50,25 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmbLine, IN
 
 	//Создание окна
 
+
+	INT screenW = GetSystemMetrics(SM_CXSCREEN);
+	INT screenH = GetSystemMetrics(SM_CYSCREEN);
+
+	INT winW = screenW * 3 / 4;
+	INT winH = screenH * 3 / 4;
+
+	INT posX = screenW / 8;
+	INT posY = screenH / 8;
+
+
 	HWND hwnd = CreateWindowEx
 	(
 		NULL, //exStyle
 		g_sz_WINDOW_CLASS, //Имя класса окна
 		g_sz_WINDOW_CLASS, //заголовок окна
 		WS_OVERLAPPEDWINDOW, //Стиль окна. Стили всегда зависят от класса окна. "WS_OVERLAPPEDWINDOW" - главное окно
-		CW_USEDEFAULT, CW_USEDEFAULT, //Position
-		640, 480, //Размер окна
+		posX, posY, //Position
+		winW, winH, //Размер окна
 		NULL,
 		NULL, //Для главного окна это ResourseID главного меню, для дочернего (Control) - ResourseID дочернего окна(IDC_BUTTON_COPY)
 		hInstance,
@@ -94,28 +108,54 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
-		INT screenW = GetSystemMetrics(SM_CXSCREEN);
-		INT screenH = GetSystemMetrics(SM_CYSCREEN);
-
-		INT winW = screenW * 3 / 4;
-		INT winH = screenH * 3 / 4;
-
-		INT posX = (screenW - winW) / 2;
-		INT posY = (screenH - winH) / 2;
-
-		SetWindowPos(
+		HWND hwnd = CreateWindowEx
+		(
+			NULL,
+			"Button",
+			"Кнопка",
+			WS_CHILD | WS_VISIBLE,
+			10, 10,
+			150, 80,
 			hwnd,
-			nullptr,
-			posX,
-			posY,
-			winW,
-			winH,
-			SWP_NOZORDER 
+			(HMENU)1000, //Для главного окна - это ResourseID главного меню,
+			//Для дочернего окна(элемент управления окна) - это ResourseID дочернего элемента
+			GetModuleHandle(NULL),
+			NULL
 		);
 	}
 		break;
+
+	case WM_MOVE:
+
+	case WM_SIZE:
+	{
+		RECT window_rect = {};
+		GetWindowRect(hwnd, &window_rect);
+		CONST INT SIZE = 1024;
+		CHAR sz_title[SIZE] = {};
+		wsprintf
+		(
+			sz_title,
+			"%s, Position: %ix%i Size: %ix%i",
+			g_sz_WINDOW_CLASS,
+			window_rect.left, window_rect.top,
+			window_rect.right - window_rect.left,
+			window_rect.bottom - window_rect.top
+		);
+		SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)sz_title);
+	}
+	break;
+
 	case WM_COMMAND:
-		break;
+
+		switch(LOWORD(wParam))
+		{
+		case IDC_BUTTON:
+			MessageBox(hwnd, "Cursor check", "info", MB_OK | MB_ICONINFORMATION);
+			break;
+		}
+		
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
