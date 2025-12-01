@@ -10,6 +10,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmbLine, INT nCmdShow)
 {
+	//Регистрация класса окна
 
 	WNDCLASSEX wClass;
 	ZeroMemory(&wClass, sizeof(wClass));
@@ -108,7 +109,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
-		HWND hwnd = CreateWindowEx
+		HWND hwnd1 = CreateWindowEx
 		(
 			NULL,
 			"Button",
