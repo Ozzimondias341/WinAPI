@@ -427,6 +427,34 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 
+	case WM_CONTEXTMENU:
+	{
+		HMENU cmMain = CreatePopupMenu();
+		AppendMenu(cmMain, MF_STRING, IDM_SQUARE_BLUE, "Square blue");
+		AppendMenu(cmMain, MF_STRING, IDM_METAL_MISTRAL, "Metal mistral");
+		AppendMenu(cmMain, MF_SEPARATOR, NULL, NULL);
+		AppendMenu(cmMain, MF_STRING, IDM_EXIT, "Exit");
+
+		BOOL selected_item =  TrackPopupMenuEx
+		(
+			cmMain,
+			TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON | TPM_VERNEGANIMATION,
+			LOWORD(lParam), HIWORD(lParam),
+			hwnd,
+			NULL
+		);
+
+		switch (selected_item)
+		{
+		case IDM_SQUARE_BLUE: SetSkin(hwnd, "square_blue"); break;
+		case IDM_METAL_MISTRAL: SetSkin(hwnd, "metal_mistral"); break;
+		case IDM_EXIT: SendMessage(hwnd, WM_CLOSE, 0, 0); break;
+		}
+
+		DestroyMenu(cmMain);
+	}
+		break;
+
 	case WM_DESTROY:
 		FreeConsole();
 		PostQuitMessage(0);
@@ -447,7 +475,7 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 	CHAR sz_filename[FILENAME_MAX] = {};
 	for (int i = 0; i < 10; i++)
 	{
-		sprintf(sz_filename, "BUttonsBMP\\%s\\button_%i.bmp", skin, i);
+		sprintf(sz_filename, "ButtonsBMP\\%s\\button_%i.bmp", skin, i);
 		HWND hButton = GetDlgItem(hwnd, IDC_BUTTON_0 + i);
 		HBITMAP bmpButton = (HBITMAP)LoadImage
 		(
@@ -461,7 +489,7 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 		SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
 	}
 
-
+	sprintf(sz_filename, "ButtonsBMP\\%s\\button_point.bmp", skin);
 	HWND hButton = GetDlgItem(hwnd, IDC_BUTTON_POINT);
 	HBITMAP bmpButton = (HBITMAP)LoadImage
 	(
@@ -473,4 +501,104 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 		LR_LOADFROMFILE
 	);
 	SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
+
+
+	/////////
+
+
+	sprintf(sz_filename, "ButtonsBMP\\%s\\button_plus.bmp", skin);
+	hButton = GetDlgItem(hwnd, IDC_BUTTON_PLUS);
+	bmpButton = (HBITMAP)LoadImage
+	(
+		GetModuleHandle(NULL),
+		sz_filename,
+		IMAGE_BITMAP,
+		g_i_BUTTON_SIZE,
+		g_i_BUTTON_SIZE,
+		LR_LOADFROMFILE
+	);
+	SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
+
+	sprintf(sz_filename, "ButtonsBMP\\%s\\button_minus.bmp", skin);
+	hButton = GetDlgItem(hwnd, IDC_BUTTON_MINUS);
+	bmpButton = (HBITMAP)LoadImage
+	(
+		GetModuleHandle(NULL),
+		sz_filename,
+		IMAGE_BITMAP,
+		g_i_BUTTON_SIZE,
+		g_i_BUTTON_SIZE,
+		LR_LOADFROMFILE
+	);
+	SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
+
+	sprintf(sz_filename, "ButtonsBMP\\%s\\button_slash.bmp", skin);
+	hButton = GetDlgItem(hwnd, IDC_BUTTON_SLASH);
+	bmpButton = (HBITMAP)LoadImage
+	(
+		GetModuleHandle(NULL),
+		sz_filename,
+		IMAGE_BITMAP,
+		g_i_BUTTON_SIZE,
+		g_i_BUTTON_SIZE,
+		LR_LOADFROMFILE
+	);
+	SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
+
+	sprintf(sz_filename, "ButtonsBMP\\%s\\button_aster.bmp", skin);
+	hButton = GetDlgItem(hwnd, IDC_BUTTON_ASTER);
+	bmpButton = (HBITMAP)LoadImage
+	(
+		GetModuleHandle(NULL),
+		sz_filename,
+		IMAGE_BITMAP,
+		g_i_BUTTON_SIZE,
+		g_i_BUTTON_SIZE,
+		LR_LOADFROMFILE
+	);
+	SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
+
+
+	/////////
+
+
+	sprintf(sz_filename, "ButtonsBMP\\%s\\button_bsp.bmp", skin);
+	hButton = GetDlgItem(hwnd, IDC_BUTTON_BSP);
+	bmpButton = (HBITMAP)LoadImage
+	(
+		GetModuleHandle(NULL),
+		sz_filename,
+		IMAGE_BITMAP,
+		g_i_BUTTON_SIZE,
+		g_i_BUTTON_SIZE,
+		LR_LOADFROMFILE
+	);
+	SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
+
+	sprintf(sz_filename, "ButtonsBMP\\%s\\button_clr.bmp", skin);
+	hButton = GetDlgItem(hwnd, IDC_BUTTON_CLR);
+	bmpButton = (HBITMAP)LoadImage
+	(
+		GetModuleHandle(NULL),
+		sz_filename,
+		IMAGE_BITMAP,
+		g_i_BUTTON_SIZE,
+		g_i_BUTTON_SIZE,
+		LR_LOADFROMFILE
+	);
+	SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
+
+	sprintf(sz_filename, "ButtonsBMP\\%s\\button_equal.bmp", skin);
+	hButton = GetDlgItem(hwnd, IDC_BUTTON_EQUAL);
+	bmpButton = (HBITMAP)LoadImage
+	(
+		GetModuleHandle(NULL),
+		sz_filename,
+		IMAGE_BITMAP,
+		g_i_BUTTON_SIZE,
+		g_i_DOUBLE_BUTTON_SIZE,
+		LR_LOADFROMFILE
+	);
+	SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
+
 }
