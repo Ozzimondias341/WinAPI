@@ -15,7 +15,10 @@ CONST INT g_i_INTERVAL = 2;
 CONST INT g_i_DOUBLE_BUTTON_SIZE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL;
 
 CONST INT g_i_DISPLAY_WIDTH = g_i_BUTTON_SIZE * 5 + g_i_INTERVAL * 4;
-CONST INT g_i_DISPLAY_HEIGHT = 22;
+CONST INT g_i_DISPLAY_HEIGHT = g_i_BUTTON_SIZE;
+
+CONST INT g_i_FONT_HEIGHT = g_i_DISPLAY_HEIGHT - 2;
+CONST INT g_i_FONT_WIDTH = g_i_FONT_HEIGHT / 2;
 
 CONST INT g_i_START_X = 10;
 CONST INT g_i_START_Y = 10;
@@ -100,7 +103,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		/*AllocConsole();
 		freopen("CONOUT$", "w", stdout);*/
-		CreateWindowEx
+		HWND hEdit = CreateWindowEx
 		(
 			NULL,
 			"Edit",
@@ -113,6 +116,29 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+
+
+
+		AddFontResourceEx("Fonts\\digital-7.ttf", FR_PRIVATE, 0);
+		HFONT hFont = CreateFont
+		(
+			g_i_FONT_HEIGHT,
+			g_i_FONT_WIDTH,
+			0,0,
+			FW_BOLD,	//Bold
+			FALSE,		//Italian
+			FALSE,		//underline
+			FALSE,		//strike out
+			DEFAULT_CHARSET,
+			OUT_TT_ONLY_PRECIS,
+			CLIP_TT_ALWAYS,
+			ANTIALIASED_QUALITY,
+			FF_DONTCARE,
+			"Digital-7"
+		);
+
+		SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
+
 		CHAR sz_button[2] = {};
 		for (int i = 6; i >= 0; i -= 3)
 		{
@@ -605,15 +631,15 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 	/////////////////////////////
 
 	 
-	/*sprintf(sz_filename, "ButtonsBMP\\%s\\background.bmp", skin);
+	sprintf(sz_filename, "ButtonsBMP\\%s\\background.bmp", skin);
 	bmpButton = (HBITMAP)LoadImage
 	(
 		GetModuleHandle(NULL),
 		sz_filename,
 		IMAGE_BITMAP,
-		1000,
-		1000,
+		g_i_WINDOW_WIDTH,
+		g_i_WINDOW_HEIGHT,
 		LR_LOADFROMFILE
 	);
-	SendMessage(hwnd, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);*/
+	SendMessage(hwnd, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);
 }
