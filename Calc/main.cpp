@@ -601,4 +601,19 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 	);
 	SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
 
+
+	/////////////////////////////
+
+	 
+	/*sprintf(sz_filename, "ButtonsBMP\\%s\\background.bmp", skin);
+	bmpButton = (HBITMAP)LoadImage
+	(
+		GetModuleHandle(NULL),
+		sz_filename,
+		IMAGE_BITMAP,
+		1000,
+		1000,
+		LR_LOADFROMFILE
+	);
+	SendMessage(hwnd, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);*/
 }
