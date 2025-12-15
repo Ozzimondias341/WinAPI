@@ -4,7 +4,7 @@
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc PV_521";
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
-
+VOID SetSkinDLL(HWND hwnd, CONST CHAR skin[]);
 
 CONST INT g_i_WINDOW_COLOR = 0;
 CONST INT g_i_DISPLAY_COLOR = 1;
