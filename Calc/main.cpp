@@ -71,6 +71,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static int skinID = 0;
+	static int fontID = 0;
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -92,6 +93,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		);
 
 
+	/*	SetFontDLL(hEdit, "Digital-7");*/
 
 		AddFontResourceEx("Fonts\\digital-7.ttf", FR_PRIVATE, 0);
 		HFONT hFont = CreateFont
@@ -446,7 +448,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HMENU cmMain = CreatePopupMenu();
 		AppendMenu(cmMain, MF_STRING, IDM_SQUARE_BLUE, "Square blue");
 		AppendMenu(cmMain, MF_STRING, IDM_METAL_MISTRAL, "Metal mistral");
+		AppendMenu(cmMain, MF_STRING, IDM_MY_SKIN, "My skin");
 		AppendMenu(cmMain, MF_SEPARATOR, NULL, NULL);
+		//AppendMenu(cmMain, MF_STRING, IDM_FONT_DIGITAL_7, "Digital 7");
+		//AppendMenu(cmMain, MF_STRING, IDM_FONT_28_DAYS_LATER, "28 DAYS LATER");
+		//AppendMenu(cmMain, MF_SEPARATOR, NULL, NULL);
 		AppendMenu(cmMain, MF_STRING, IDM_EXIT, "Exit");
 
 		BOOL selected_item =  TrackPopupMenuEx
@@ -462,14 +468,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 		case IDM_SQUARE_BLUE: skinID = 0; break;
 		case IDM_METAL_MISTRAL: skinID = 1; break;
+		case IDM_MY_SKIN: skinID = 2; break;
+		/////////
+		case IDM_FONT_DIGITAL_7: fontID = 0; break;
+		case IDM_FONT_28_DAYS_LATER: fontID = 1; break;
 		case IDM_EXIT: SendMessage(hwnd, WM_CLOSE, 0, 0); break;
 		}
 
-		//HDC hdc = GetDC(hwnd);
-		//SendMessage(hwnd, WM_PAINT, (WPARAM)hdc, (LPARAM)hwnd);
-		//ReleaseDC(hwnd, hdc);
-		
 		InvalidateRect(hwnd, 0, TRUE);
+
+		//SetFontDLL(hwnd, g_sz_FONT[fontID]);
 
 		SetSkinDLL(hwnd, g_sz_SKIN[skinID]);
 
@@ -522,10 +530,10 @@ VOID SetSkinDLL(HWND hwnd, CONST CHAR skin[])
 
 	if (!hSkin)
 	{
-		MessageBoxW(
+		MessageBox(
 			nullptr,
-			L"Произошла ошибка",
-			L"Ошибка",
+			"Произошла ошибка",
+			"Ошибка",
 			MB_ICONERROR | MB_OK
 		);
 		return;
@@ -548,4 +556,53 @@ VOID SetSkinDLL(HWND hwnd, CONST CHAR skin[])
 		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
 	}
 	FreeLibrary(hSkin);
+}
+
+VOID SetFontDLL(HWND hwnd, CONST CHAR font[])
+{
+	HMODULE g_hFontDll = nullptr;
+	HANDLE  g_hFontRes = nullptr;
+	HFONT   g_hFont = nullptr;
+
+	g_hFontDll = LoadLibrary(font);
+
+	if (!font)
+	{
+		MessageBox(
+			nullptr,
+			"Произошла ошибка",
+			"Ошибка",
+			MB_ICONERROR | MB_OK
+		);
+		return;
+	}
+
+	HRSRC hRes = FindResource(
+		g_hFontDll,
+		MAKEINTRESOURCE(101),
+		RT_RCDATA
+	);
+
+	if (!hRes)
+		return;
+
+
+	g_hFont = CreateFont(
+		g_i_FONT_HEIGHT,
+		g_i_FONT_WIDTH,
+		0, 0,
+		FW_BOLD,	
+		FALSE,		
+		FALSE,		
+		FALSE,		
+		DEFAULT_CHARSET,
+		OUT_TT_ONLY_PRECIS,
+		CLIP_TT_ALWAYS,
+		ANTIALIASED_QUALITY,
+		FF_DONTCARE,
+		font
+	);
+
+	SendMessage(hwnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
+
 }
